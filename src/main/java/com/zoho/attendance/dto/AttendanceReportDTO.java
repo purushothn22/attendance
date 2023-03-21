@@ -11,10 +11,6 @@ import java.sql.Date;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class AttendanceDTO {
-    private String empId;
-    private Date date;
-    private String status;
-    private String clockTime;
-    private String location;
+public class AttendanceReportDTO {
+    private String date;
 }

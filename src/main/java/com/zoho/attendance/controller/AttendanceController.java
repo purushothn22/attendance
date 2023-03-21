@@ -1,6 +1,7 @@
 package com.zoho.attendance.controller;
 
 import com.zoho.attendance.dto.AttendanceDTO;
+import com.zoho.attendance.dto.AttendanceReportDTO;
 import com.zoho.attendance.dto.LocationInfoDTO;
 import com.zoho.attendance.service.AttendanceService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,7 +61,18 @@ public class AttendanceController {
             //System.out.println("en da ipdi "+employeeid+employeeservice.findByempid(employeeid));
             return ResponseEntity.status(HttpStatus.CREATED).headers(headers).body(attendanceservice.findAllUser());
         } catch (Exception e) {
-            headers.add("Message", "false");
+            headers.add("Message", e.getLocalizedMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).headers(headers).body("Failed to add the user");
+        }
+    }
+
+    @PostMapping(path = "/findByDate")
+    public ResponseEntity<?> findByDate(@RequestBody AttendanceReportDTO request) {
+        HttpHeaders headers = new HttpHeaders();
+        try {
+            return ResponseEntity.status(HttpStatus.CREATED).headers(headers).body(attendanceservice.findByDate(request.getDate()));
+        } catch (Exception e) {
+            headers.add("Message", e.getLocalizedMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).headers(headers).body("Failed to add the user");
         }
     }
