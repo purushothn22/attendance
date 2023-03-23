@@ -5,11 +5,10 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.sql.Date;
 import java.sql.Time;
+import java.util.Base64;
 
 @Entity
 @Data
@@ -17,11 +16,22 @@ import java.sql.Time;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "attendance")
+@IdClass(AttendanceId.class)
 public class AttendanceEntity {
     @Id
     private String empId;
+    @Id
+    private String clockDate;
     private Date date;
     private String status;
     private Time clockTime;
     private String location;
+    private String latitude;
+    private String longitude;
+    @Lob
+    @Basic(fetch = FetchType.LAZY)
+    private byte[] photo;
+    @Id
+    @Column(name = "checkin")
+    private int logCount;
 }

@@ -1,8 +1,9 @@
 package com.zoho.attendance.controller;
 
-import com.zoho.attendance.dto.AttendanceDTO;
-import com.zoho.attendance.dto.AttendanceReportDTO;
-import com.zoho.attendance.dto.LocationInfoDTO;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.zoho.attendance.Util.ImageUtil;
+import com.zoho.attendance.dto.*;
+import com.zoho.attendance.entity.AttendanceEntity;
 import com.zoho.attendance.service.AttendanceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -10,8 +11,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 
@@ -34,73 +40,47 @@ public class AttendanceController {
         params.put("location", attendanceRequest.getLatitude() + "," + attendanceRequest.getLongitude());
         Object result = restTemplate.getForObject(uri, Object.class, params);
         return result;
-        /*System.out.print("result"+result.toString());
-        final String baseUrl= "https://revgeocode.search.hereapi.com/v1";
-
-        List<LocationDTO> location= WebClient.create().get()
-                .uri(builder -> builder.scheme("https")
-                        .host("revgeocode.search.hereapi.com").path("v1").path("/revgeocode")
-                        .queryParam("at", attendanceRequest.getLatitude()+","+attendanceRequest.getLongitude())
-                        .queryParam("lang", "en-US")
-                        .queryParam("apiKey", "9gaca_hmaWwdYwyZHXPhU5Vm4tHirD2x1HGWISSQD3U")
-                        .build())
-                .retrieve()
-                .bodyToFlux(LocationDTO.class)      //returning multiple values, so bodyToFlux
-                .collectList()
-                .block();
-        System.out.print("webclient"+location);
-        return location;*/
     }
 
-
-    @GetMapping(path = "/findAll")
-    public ResponseEntity<?> findAllUser() {
-        HttpHeaders headers = new HttpHeaders();
-
-        try {
-            //System.out.println("en da ipdi "+employeeid+employeeservice.findByempid(employeeid));
-            return ResponseEntity.status(HttpStatus.CREATED).headers(headers).body(attendanceservice.findAllUser());
-        } catch (Exception e) {
-            headers.add("Message", e.getLocalizedMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).headers(headers).body("Failed to add the user");
-        }
+    @PostMapping(path = "/getDailyAttendance")
+    public List<AttendanceEntity> getAttendanceByDate(@RequestBody AttendanceReportDTO request) {
+        return attendanceservice.getAttendanceByDate(request.getDate());
     }
 
-    @PostMapping(path = "/findByDate")
-    public ResponseEntity<?> findByDate(@RequestBody AttendanceReportDTO request) {
-        HttpHeaders headers = new HttpHeaders();
-        try {
-            return ResponseEntity.status(HttpStatus.CREATED).headers(headers).body(attendanceservice.findByDate(request.getDate()));
-        } catch (Exception e) {
-            headers.add("Message", e.getLocalizedMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).headers(headers).body("Failed to add the user");
-        }
+    @PostMapping(path = "/checkAttendance")
+    public Map<String, Object> checkAttendance(@RequestBody MonthlyAttendanceDTO request) {
+        return attendanceservice.checkAttendance(request);
     }
 
-
-    @GetMapping(path = "/findbyempid/{empId}")
-    public ResponseEntity<?> findByempid(@RequestParam String empId) {
-        HttpHeaders headers = new HttpHeaders();
-
-        try {
-            //System.out.println("en da ipdi "+employeeid+employeeservice.findByempid(employeeid));
-            return ResponseEntity.status(HttpStatus.CREATED).headers(headers).body(attendanceservice.findByEmpId(empId));
-        } catch (Exception e) {
-            headers.add("Message", "false");
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).headers(headers).body("Failed to add the user");
-        }
+    @PostMapping(path = "/getAttendanceByMonth")
+    public List<AttendanceEntity> getAttendanceByMonth(@RequestBody MonthlyAttendanceDTO request) {
+        return attendanceservice.getAttendanceByMonth(request);
     }
 
-    @PostMapping(path="/markAttendance")
-    public ResponseEntity<?> markAttendance(@RequestBody AttendanceDTO request) {
-        HttpHeaders headers = new HttpHeaders();
+    @GetMapping(path = "/getAttendanceSummary/{empId}")
+    public List<Map<String, Object>> getAttendanceSummaryByEmp(@PathVariable String empId) {
+        return attendanceservice.getAttendanceSummaryByEmp(empId);
+    }
 
-        try {
-            return ResponseEntity.status(HttpStatus.CREATED).headers(headers).body(attendanceservice.markAttendance(request));
-        } catch (Exception e) {
-            headers.add("Message", "false");
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).headers(headers).body("Failed to add the user");
-        }
+    @PostMapping(path = "/getAttendanceForEmp")
+    public List<Map<String, Object>> getAttendanceForEmp(@RequestBody MonthlyAttendanceDTO request) {
+        return attendanceservice.getAttendanceForEmp(request);
+    }
+
+    @PostMapping(path = "/markAttendance")
+    public AttendanceEntity markAttendance(@RequestPart("photo") MultipartFile photo, @RequestPart String attendanceJson) throws IOException {
+        AttendanceDTO request = new AttendanceDTO();
+        ObjectMapper objectMapper = new ObjectMapper();
+        request = objectMapper.readValue(attendanceJson, AttendanceDTO.class);
+        request.setPhoto(ImageUtil.compressImage(photo.getBytes()));
+        return attendanceservice.markAttendance(request);
+    }
+
+    @ExceptionHandler(Exception.class)
+    public final ResponseEntity<ErrorDetails> handleAllExceptions(Exception e, WebRequest request) {
+        e.printStackTrace();
+        ErrorDetails errorDetails = new ErrorDetails(new Date(), e.getMessage(), request.getDescription(false));
+        return new ResponseEntity<>(errorDetails, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
 }
