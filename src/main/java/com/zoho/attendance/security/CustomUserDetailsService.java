@@ -1,6 +1,5 @@
 package com.zoho.attendance.security;
 
-import com.zoho.attendance.entity.RoleEntity;
 import com.zoho.attendance.entity.UsersEntity;
 import com.zoho.attendance.repository.UsersRepository;
 import org.springframework.security.core.GrantedAuthority;
@@ -39,11 +38,11 @@ public class CustomUserDetailsService implements UserDetailsService {
         }
     }
 
-    private Collection < ? extends GrantedAuthority> mapRolesToAuthorities(Collection <RoleEntity> roles) {
+/*    private Collection < ? extends GrantedAuthority> mapRolesToAuthorities(Collection <RoleEntity> roles) {
         Collection < ? extends GrantedAuthority> mapRoles = roles.stream()
                 .map(role -> new SimpleGrantedAuthority(role.getName()))
                 .collect(Collectors.toList());
         return mapRoles;
-    }
+    }*/
 }
 

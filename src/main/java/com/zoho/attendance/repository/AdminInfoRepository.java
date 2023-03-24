@@ -9,7 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Repository
 public interface AdminInfoRepository extends CrudRepository<AdminInfoEntity, String> {
 
-    EmployeeInfoEntity findByEmpId(String empId);
+    AdminInfoEntity findByEmpId(String empId);
 
     @Transactional
     void deleteByEmpId(String empId);

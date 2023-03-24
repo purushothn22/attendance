@@ -22,4 +22,5 @@ public class UsersDTO {
     private String gender;
     private String address;
     private String email;
+    private String multiLocation;
 }

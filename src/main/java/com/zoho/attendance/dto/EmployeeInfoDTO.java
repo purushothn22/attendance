@@ -1,25 +1,17 @@
-package com.zoho.attendance.entity;
+package com.zoho.attendance.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
 import java.sql.Date;
 
-@Entity
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "employee_info")
-public class EmployeeInfoEntity {
-
-    @Id
+public class EmployeeInfoDTO {
     private String empId;
     private String firstName;
     private String lastName;
@@ -28,6 +20,5 @@ public class EmployeeInfoEntity {
     private String phoneNumber;
     private String address;
     private String email;
-    @Column(name = "multi_location")
     private String multiLocation;
 }
