@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 import java.util.Date;
 
 @Component
-public class JwtUtils {
+public class JwtTokenUtil {
     @Value("${jwt.secret}")
     private String jwtSecret;
 
@@ -26,13 +26,12 @@ public class JwtUtils {
                 .compact();
     }
 
-    public Long getUserIdFromToken(String token) {
-        Claims claims = Jwts.parser()
+    public String getUserIdFromToken(String token) {
+        return Jwts.parser()
                 .setSigningKey(jwtSecret)
                 .parseClaimsJws(token)
-                .getBody();
-
-        return Long.parseLong(claims.getSubject());
+                .getBody()
+                .getSubject();
     }
 
     public boolean validateToken(String token) {

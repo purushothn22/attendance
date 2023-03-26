@@ -1,6 +1,6 @@
 package com.zoho.attendance.controller;
 
-import com.zoho.attendance.config.JwtUtils;
+import com.zoho.attendance.config.JwtTokenUtil;
 import com.zoho.attendance.dto.LoginRequest;
 import com.zoho.attendance.dto.PasswordRequest;
 import com.zoho.attendance.dto.UsersDTO;
@@ -19,12 +19,12 @@ import java.util.Map;
 @RequestMapping("/api/auth")
 public class AuthController {
 
-    private JwtUtils jwtUtils;
+    private JwtTokenUtil jwtTokenUtil;
     private UsersService service;
 
     @Autowired
-    public AuthController(JwtUtils jwtUtils, UsersService service) {
-        this.jwtUtils = jwtUtils;
+    public AuthController(JwtTokenUtil jwtTokenUtil, UsersService service) {
+        this.jwtTokenUtil = jwtTokenUtil;
         this.service = service;
     }
 
@@ -36,7 +36,7 @@ public class AuthController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
-        String jwtToken = jwtUtils.generateToken(user.getEmpId());
+        String jwtToken = jwtTokenUtil.generateToken(user.getEmpId());
         HttpHeaders headers = new HttpHeaders();
         headers.set("token", jwtToken);
         return ResponseEntity.ok().headers(headers).body(user);
@@ -50,7 +50,7 @@ public class AuthController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
-        String jwtToken = jwtUtils.generateToken(user.getEmpId());
+        String jwtToken = jwtTokenUtil.generateToken(user.getEmpId());
         HttpHeaders headers = new HttpHeaders();
         headers.set("token", jwtToken);
         return ResponseEntity.ok().headers(headers).body(user);
