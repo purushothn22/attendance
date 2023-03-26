@@ -2,10 +2,7 @@ package com.zoho.attendance.controller;
 
 import com.zoho.attendance.dto.ErrorDetails;
 import org.springframework.http.*;
-import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.context.request.WebRequest;
 
@@ -30,7 +27,8 @@ public class MyController {
     }
 
 
-    @GetMapping("/login")
+    @PostMapping("/login")
+    @CrossOrigin
     public ResponseEntity<?> login() {
         RestTemplate restTemplate = new RestTemplate();
         String url = "http://resyindustries.osc-fr1.scalingo.io/api/auth/login";

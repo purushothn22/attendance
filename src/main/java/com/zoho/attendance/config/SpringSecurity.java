@@ -25,11 +25,16 @@ public class SpringSecurity extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.csrf().disable().authorizeRequests()
+/*        http.csrf().disable().authorizeRequests()
                 .antMatchers("/employee/**").hasAnyRole("ADMIN", "EMP", "SADMIN")
                 .antMatchers("/user/**").hasAnyRole("ADMIN", "EMP", "SADMIN")
                 .anyRequest().authenticated()
-                .and().formLogin();
+                .and().formLogin();*/
+        http
+                .cors().and()
+                .authorizeRequests()
+                .anyRequest().permitAll()
+                .and().csrf().disable();
     }
 
     @Override
@@ -50,13 +55,16 @@ public class SpringSecurity extends WebSecurityConfigurerAdapter {
     }
 
     @Bean
-    CorsConfigurationSource corsConfigurationSource()
-    {
+    public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList("http://localhost:8100","http://localhost:8081"));
-        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        configuration.addAllowedOrigin("*");
+        configuration.addAllowedMethod("*");
+        configuration.addAllowedHeader("*");
+        configuration.setAllowCredentials(true);
+
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
+
         return source;
     }
 
