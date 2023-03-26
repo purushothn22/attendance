@@ -12,14 +12,9 @@ import java.util.Arrays;
 @RequestMapping("/api")
 public class MyController {
 
-    private final RestTemplate restTemplate;
-
-    public MyController(RestTemplate restTemplate) {
-        this.restTemplate = restTemplate;
-    }
-
     @GetMapping("/external-data")
     public ResponseEntity<String> getExternalData() {
+        RestTemplate restTemplate = new RestTemplate();
         HttpHeaders headers = new HttpHeaders();
         headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
         HttpEntity<String> entity = new HttpEntity<String>(headers);
