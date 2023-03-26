@@ -28,6 +28,20 @@ public class AuthController {
         this.service = service;
     }
 
+    @GetMapping("/login1")
+    public ResponseEntity<?> loginTest() {
+        UsersEntity user = service.getUser("E1");
+
+        if (user == null || !BCrypt.checkpw("Test", user.getPassword())) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        String jwtToken = jwtUtils.generateToken(user.getEmpId());
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("token", jwtToken);
+        return ResponseEntity.ok().headers(headers).body(user);
+    }
+
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
         UsersEntity user = service.getUser(loginRequest.getEmpId());

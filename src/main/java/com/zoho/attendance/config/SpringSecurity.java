@@ -31,10 +31,9 @@ public class SpringSecurity extends WebSecurityConfigurerAdapter {
                 .anyRequest().authenticated()
                 .and().formLogin();*/
         http
-                .cors().and()
+                .csrf().disable()
                 .authorizeRequests()
-                .anyRequest().permitAll()
-                .and().csrf().disable();
+                .anyRequest().permitAll();
     }
 
     @Override
@@ -54,7 +53,7 @@ public class SpringSecurity extends WebSecurityConfigurerAdapter {
         return new ModelMapper();
     }
 
-    @Bean
+  /*  @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.addAllowedOrigin("*");
@@ -66,6 +65,6 @@ public class SpringSecurity extends WebSecurityConfigurerAdapter {
         source.registerCorsConfiguration("/**", configuration);
 
         return source;
-    }
+    }*/
 
 }

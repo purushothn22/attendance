@@ -27,11 +27,11 @@ public class MyController {
     }
 
 
-    @PostMapping("/login")
+    @GetMapping("/login")
     @CrossOrigin
     public ResponseEntity<?> login() {
         RestTemplate restTemplate = new RestTemplate();
-        String url = "http://resyindustries.osc-fr1.scalingo.io/api/auth/login";
+        String url = "http://localhost:8081/api/auth/login";
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
