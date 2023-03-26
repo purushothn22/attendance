@@ -29,7 +29,6 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    @CrossOrigin
     public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
         UsersEntity user = service.getUser(loginRequest.getEmpId());
 
@@ -52,6 +51,12 @@ public class AuthController {
     public Map<String, Object> changePassword(@RequestBody PasswordRequest request) {
         return service.changePassword(request);
     }
+
+    @GetMapping("/corsTest")
+    public ResponseEntity<String> corsTest() {
+        return ResponseEntity.ok("Cors authenticated");
+    }
+
 
 /*    @PostMapping("/login")
     public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest loginRequest) {
