@@ -29,6 +29,7 @@ public class AuthController {
     }
 
     @PostMapping("/login")
+    @CrossOrigin
     public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
         UsersEntity user = service.getUser(loginRequest.getEmpId());
 
