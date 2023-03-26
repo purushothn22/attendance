@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.zoho.attendance.Util.ImageUtil;
 import com.zoho.attendance.dto.*;
 import com.zoho.attendance.entity.AttendanceEntity;
+import com.zoho.attendance.entity.EmployeeInfoEntity;
 import com.zoho.attendance.service.AttendanceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -75,6 +76,17 @@ public class AttendanceController {
         request.setPhoto(ImageUtil.compressImage(photo.getBytes()));
         return attendanceservice.markAttendance(request);
     }
+
+/*    @PostMapping(path = "/corsTest")
+    public EmployeeInfoEntity corsTest() {
+        final String uri = "http://resyindustries.osc-fr1.scalingo.io/api/employee/{emp}";
+        System.out.println("cors authorized");
+        RestTemplate restTemplate = new RestTemplate();
+        Map<String, Object> params = new HashMap<>();
+        params.put("emp", "E1");
+        EmployeeInfoEntity result = restTemplate.getForObject(uri, EmployeeInfoEntity.class, params);
+        return result;
+    }*/
 
     @ExceptionHandler(Exception.class)
     public final ResponseEntity<ErrorDetails> handleAllExceptions(Exception e, WebRequest request) {
