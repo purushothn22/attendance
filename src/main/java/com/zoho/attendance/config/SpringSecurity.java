@@ -29,8 +29,8 @@ public class SpringSecurity extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.csrf().disable().authorizeRequests()
-                .antMatchers("/employee/**").hasRole("ADMIN")
-                .antMatchers("/user/**").hasAnyRole("ADMIN", "USER")
+                .antMatchers("/employee/**").hasAnyRole("ADMIN", "EMP", "SADMIN")
+                .antMatchers("/user/**").hasAnyRole("ADMIN", "EMP", "SADMIN")
                 .anyRequest().authenticated()
                 .and().formLogin();
     }
@@ -52,7 +52,7 @@ public class SpringSecurity extends WebSecurityConfigurerAdapter {
         return new ModelMapper();
     }
 
-    @Bean
+/*    @Bean
     public CorsFilter corsFilter() {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         CorsConfiguration config = new CorsConfiguration();
@@ -62,6 +62,6 @@ public class SpringSecurity extends WebSecurityConfigurerAdapter {
         config.setAllowCredentials(true); // Allow cookies to be sent in cross-origin requests
         source.registerCorsConfiguration("/**", config);
         return new CorsFilter(source);
-    }
+    }*/
 
 }
