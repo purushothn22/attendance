@@ -21,6 +21,10 @@ public class EmployeeService {
     @Autowired
     private ModelMapper modelMapper;
 
+    public EmployeeInfoEntity findAllEmployee() {
+        return (EmployeeInfoEntity) repository.findAll();
+    }
+
     public EmployeeInfoEntity findEmployee(String empId) {
         return repository.findByEmpId(empId);
     }

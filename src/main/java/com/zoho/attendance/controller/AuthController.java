@@ -1,11 +1,13 @@
 package com.zoho.attendance.controller;
 
 import com.zoho.attendance.config.JwtTokenUtil;
+import com.zoho.attendance.dto.LoginDTO;
 import com.zoho.attendance.dto.LoginRequest;
 import com.zoho.attendance.dto.PasswordRequest;
 import com.zoho.attendance.dto.UsersDTO;
 import com.zoho.attendance.entity.UsersEntity;
 import com.zoho.attendance.service.UsersService;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -21,11 +23,13 @@ public class AuthController {
 
     private JwtTokenUtil jwtTokenUtil;
     private UsersService service;
+    private ModelMapper modelMapper;
 
     @Autowired
-    public AuthController(JwtTokenUtil jwtTokenUtil, UsersService service) {
+    public AuthController(JwtTokenUtil jwtTokenUtil, UsersService service,ModelMapper modelMapper) {
         this.jwtTokenUtil = jwtTokenUtil;
         this.service = service;
+        this.modelMapper=modelMapper;
     }
 
     @GetMapping("/login1")
@@ -36,24 +40,26 @@ public class AuthController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
+        LoginDTO response = modelMapper.map(user, LoginDTO.class);
         String jwtToken = jwtTokenUtil.generateToken(user.getEmpId());
         HttpHeaders headers = new HttpHeaders();
         headers.set("token", jwtToken);
-        return ResponseEntity.ok().headers(headers).body(user);
+        response.setToken(jwtToken);
+        return ResponseEntity.ok().headers(headers).body(response);
     }
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
         UsersEntity user = service.getUser(loginRequest.getEmpId());
-
         if (user == null || !BCrypt.checkpw(loginRequest.getPassword(), user.getPassword())) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
-
+        LoginDTO response = modelMapper.map(user, LoginDTO.class);
         String jwtToken = jwtTokenUtil.generateToken(user.getEmpId());
         HttpHeaders headers = new HttpHeaders();
         headers.set("token", jwtToken);
-        return ResponseEntity.ok().headers(headers).body(user);
+        response.setToken(jwtToken);
+        return ResponseEntity.ok().headers(headers).body(response);
     }
 
     @PostMapping("/register")
