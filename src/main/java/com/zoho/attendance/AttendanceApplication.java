@@ -20,7 +20,7 @@ public class AttendanceApplication {
         SpringApplication.run(AttendanceApplication.class, args);
     }
 
-    @Bean
+/*    @Bean
     public WebMvcConfigurer corsConfigurer() {
         return new WebMvcConfigurerAdapter() {
             @Override
@@ -32,5 +32,5 @@ public class AttendanceApplication {
                         .maxAge(3600);
             }
         };
-    }
+    }*/
 }
