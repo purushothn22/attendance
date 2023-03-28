@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -21,8 +22,8 @@ public class EmployeeService {
     @Autowired
     private ModelMapper modelMapper;
 
-    public EmployeeInfoEntity findAllEmployee() {
-        return (EmployeeInfoEntity) repository.findAll();
+    public List<EmployeeInfoEntity> findAllEmployee() {
+        return (List<EmployeeInfoEntity>) repository.findAll();
     }
 
     public EmployeeInfoEntity findEmployee(String empId) {
