@@ -1,6 +1,5 @@
 package com.zoho.attendance.service;
 
-import com.zoho.attendance.Util.ImageUtil;
 import com.zoho.attendance.dto.AttendanceDTO;
 import com.zoho.attendance.dto.MonthlyAttendanceDTO;
 import com.zoho.attendance.entity.AttendanceEntity;
@@ -9,12 +8,14 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.sql.Date;
 import java.sql.Time;
 import java.time.LocalDate;
 import java.util.*;
-import java.util.stream.Collectors;
+import java.util.zip.DataFormatException;
+import java.util.zip.Deflater;
+import java.util.zip.Inflater;
 
 @Service
 public class AttendanceService {
@@ -25,17 +26,19 @@ public class AttendanceService {
     private ModelMapper modelMapper;
 
 
-    public List<AttendanceEntity> getAttendanceByDate(String reqDate) {
-/*        List<AttendanceEntity> responseList=new ArrayList<>();
-        List<AttendanceEntity> entityList= attendanceRepository.getAttendanceByDate(reqDate);
+    public List<AttendanceDTO> getAttendanceByDate(String reqDate) throws DataFormatException, IOException {
+        List<AttendanceDTO> responseList = new ArrayList<>();
+      /*   List<AttendanceEntity> entityList= attendanceRepository.getAttendanceByDate(reqDate);
         for(AttendanceEntity entity:entityList){
             entity.setPhoto(ImageUtil.decompressImage(entity.getPhoto()));
             responseList.add(entity);
         }*/
-        List<AttendanceEntity> responseList = attendanceRepository.getAttendanceByDate(reqDate)
-                .stream()
-                .peek(entity -> entity.setPhoto(ImageUtil.decompressImage(entity.getPhoto())))
-                .collect(Collectors.toList());
+        List<AttendanceEntity> entityList = attendanceRepository.getAttendanceByDate(reqDate);
+        for (AttendanceEntity entity : entityList) {
+            AttendanceDTO attendance = modelMapper.map(entity, AttendanceDTO.class);
+            attendance.setBase64Image(Base64.getEncoder().encodeToString(entity.getPhoto()));
+            responseList.add(attendance);
+        }
         return responseList;
     }
 
@@ -45,11 +48,18 @@ public class AttendanceService {
         return responseMap;
     }
 
-    public List<AttendanceEntity> getAttendanceByMonth(MonthlyAttendanceDTO request) {
-        List<AttendanceEntity> responseList= attendanceRepository.getAttendanceByMonth(request.getEmpId(), request.getMonth())
+    public List<AttendanceDTO> getAttendanceByMonth(MonthlyAttendanceDTO request) throws DataFormatException, IOException {
+        List<AttendanceDTO> responseList = new ArrayList<>();
+/*        List<AttendanceEntity> responseList = attendanceRepository.getAttendanceByMonth(request.getEmpId(), request.getMonth())
                 .stream()
                 .peek(entity -> entity.setPhoto(ImageUtil.decompressImage(entity.getPhoto())))
-                .collect(Collectors.toList());
+                .collect(Collectors.toList());*/
+        List<AttendanceEntity> entityList = attendanceRepository.getAttendanceByMonth(request.getEmpId(), request.getMonth());
+        for (AttendanceEntity entity : entityList) {
+            AttendanceDTO attendance = modelMapper.map(entity, AttendanceDTO.class);
+            attendance.setBase64Image(Base64.getEncoder().encodeToString(entity.getPhoto()));
+            responseList.add(attendance);
+        }
         return responseList;
     }
 
@@ -97,5 +107,100 @@ public class AttendanceService {
         Time sqlTime = Time.valueOf(request.getClockTime());
         attendance.setClockTime(sqlTime);
         return attendanceRepository.save(attendance);
+    }
+
+    public AttendanceEntity markAttendance1(AttendanceDTO request) throws IOException {
+        String ret = null;
+        int logCount = 0;
+        AttendanceEntity attendance = modelMapper.map(request, AttendanceEntity.class);
+
+        LocalDate localDate = request.getDate().toLocalDate();
+        String clockDate = localDate.getYear() + "-" + localDate.getMonthValue() + "-" + localDate.getDayOfMonth();
+        attendance.setClockDate(clockDate);
+        logCount += attendanceRepository.checkAttendance(request.getEmpId(), clockDate);
+        attendance.setLogCount(logCount);
+        Time sqlTime = Time.valueOf(request.getClockTime());
+        attendance.setClockTime(sqlTime);
+        byte[] imageBytes = Base64.getDecoder().decode(request.getBase64Image());
+
+        attendance.setPhoto(imageBytes);
+        return attendanceRepository.save(attendance);
+    }
+
+     /*public static byte[] compress(byte[] data) throws IOException {
+        Deflater deflater = new Deflater();
+        deflater.setInput(data);
+
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream(data.length);
+
+        deflater.finish();
+        byte[] buffer = new byte[1024];
+        while (!deflater.finished()) {
+            int count = deflater.deflate(buffer); // returns the generated code... index
+            outputStream.write(buffer, 0, count);
+        }
+        outputStream.close();
+        byte[] output = outputStream.toByteArray();
+        System.out.println("Original: " + data.length / 1024 + " Kb");
+        System.out.println("Compressed: " + output.length / 1024 + " Kb");
+        return output;
+    }
+
+    public static byte[] decompress(byte[] data) throws IOException, DataFormatException {
+        Inflater inflater = new Inflater();
+        inflater.setInput(data);
+
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream(data.length);
+        byte[] buffer = new byte[1024];
+        while (!inflater.finished()) {
+            int count = inflater.inflate(buffer);
+            outputStream.write(buffer, 0, count);
+        }
+        outputStream.close();
+        byte[] output = outputStream.toByteArray();
+        return output;
+    }*/
+
+    public byte[] compress(byte[] input) throws IOException {
+
+        Deflater deflater = new Deflater();
+        deflater.setInput(input);
+
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream(input.length);
+
+        deflater.finish();
+        byte[] buffer = new byte[1024];
+        while (!deflater.finished()) {
+            int count = deflater.deflate(buffer);
+            outputStream.write(buffer, 0, count);
+        }
+        outputStream.close();
+
+        byte[] compressedData = outputStream.toByteArray();
+        System.out.println("Original: " + input.length / 1024 + " Kb");
+        System.out.println("Compressed: " + outputStream.toByteArray().length / 1024 + " Kb");
+        return outputStream.toByteArray();
+    }
+
+    public byte[] decompress(byte[] compressedData)
+            throws IOException {
+        // decompress data
+        Inflater inflater = new Inflater();
+        inflater.setInput(compressedData);
+
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream(compressedData.length);
+
+        byte[] buffer = new byte[1024];
+        while (!inflater.finished()) {
+            try {
+                int count = inflater.inflate(buffer);
+                outputStream.write(buffer, 0, count);
+            } catch (DataFormatException e) {
+                // handle exception
+            }
+        }
+        outputStream.close();
+
+        return outputStream.toByteArray();
     }
 }

@@ -28,4 +28,5 @@ public class AttendanceDTO {
     private String longitude;
     @JsonIgnore
     private byte[] photo;
+    private String base64Image;
 }

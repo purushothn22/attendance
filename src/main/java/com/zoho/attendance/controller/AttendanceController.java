@@ -19,6 +19,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.zip.DataFormatException;
 
 
 @RestController
@@ -43,7 +44,7 @@ public class AttendanceController {
     }
 
     @PostMapping(path = "/getDailyAttendance")
-    public List<AttendanceEntity> getAttendanceByDate(@RequestBody AttendanceReportDTO request) {
+    public List<AttendanceDTO> getAttendanceByDate(@RequestBody AttendanceReportDTO request) throws DataFormatException, IOException {
         return attendanceservice.getAttendanceByDate(request.getDate());
     }
 
@@ -53,7 +54,7 @@ public class AttendanceController {
     }
 
     @PostMapping(path = "/getAttendanceByMonth")
-    public List<AttendanceEntity> getAttendanceByMonth(@RequestBody MonthlyAttendanceDTO request) {
+    public List<AttendanceDTO> getAttendanceByMonth(@RequestBody MonthlyAttendanceDTO request) throws DataFormatException, IOException {
         return attendanceservice.getAttendanceByMonth(request);
     }
 
@@ -67,13 +68,18 @@ public class AttendanceController {
         return attendanceservice.getAttendanceForEmp(request);
     }
 
-    @PostMapping(path = "/markAttendance")
+/*    @PostMapping(path = "/markAttendance")
     public AttendanceEntity markAttendance(@RequestPart("photo") MultipartFile photo, @RequestPart String attendanceJson) throws IOException {
         AttendanceDTO request = new AttendanceDTO();
         ObjectMapper objectMapper = new ObjectMapper();
         request = objectMapper.readValue(attendanceJson, AttendanceDTO.class);
         request.setPhoto(ImageUtil.compressImage(photo.getBytes()));
         return attendanceservice.markAttendance(request);
+    }*/
+
+    @PostMapping(path = "/markAttendance")
+    public AttendanceEntity markAttendance1(@RequestBody AttendanceDTO request) throws IOException {
+        return attendanceservice.markAttendance1(request);
     }
 
 /*    @PostMapping(path = "/corsTest")
