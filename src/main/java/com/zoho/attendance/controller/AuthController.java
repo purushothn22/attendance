@@ -49,7 +49,10 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
+    public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest,@RequestHeader Map<String, String> reqHeaders) {
+        reqHeaders.forEach((key, value) -> {
+            System.out.println(String.format("Header '%s' = %s", key, value));
+        });
         UsersEntity user = service.getUser(loginRequest.getEmpId());
         if (user == null || !BCrypt.checkpw(loginRequest.getPassword(), user.getPassword())) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
@@ -59,6 +62,7 @@ public class AuthController {
         HttpHeaders headers = new HttpHeaders();
         headers.set("token", jwtToken);
         response.setToken(jwtToken);
+        System.out.println(response);
         return ResponseEntity.ok().headers(headers).body(response);
     }
 
