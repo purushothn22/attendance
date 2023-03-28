@@ -33,7 +33,10 @@ public class AuthController {
     }
 
     @GetMapping("/login1")
-    public ResponseEntity<?> loginTest() {
+    public ResponseEntity<?> loginTest(@RequestHeader Map<String, String> reqHeaders) {
+        reqHeaders.forEach((key, value) -> {
+            System.out.println(String.format("Header '%s' = %s", key, value));
+        });
         UsersEntity user = service.getUser("E1");
 
         if (user == null || !BCrypt.checkpw("Test", user.getPassword())) {
