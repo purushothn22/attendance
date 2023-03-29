@@ -48,9 +48,13 @@ public class UsersService {
             repository.save(newUser);
             if (user.getRole().equalsIgnoreCase("ADMIN")) {
                 AdminInfoEntity adminInfo = modelMapper.map(user, AdminInfoEntity.class);
+                java.sql.Date sqlDate = java.sql.Date.valueOf(user.getDob());
+                adminInfo.setDateOfBirth(sqlDate);
                 adminRepository.save(adminInfo);
             } else {
                 EmployeeInfoEntity employeeInfo = modelMapper.map(user, EmployeeInfoEntity.class);
+                java.sql.Date sqlDate = java.sql.Date.valueOf(user.getDob());
+                employeeInfo.setDateOfBirth(sqlDate);
                 employeeInfo.setMultiLocation(user.getMultiLocation());
                 empRepository.save(employeeInfo);
             }
@@ -79,6 +83,26 @@ public class UsersService {
                 responseMap.put(RETURN_CODE, 3);
                 responseMap.put(RETURN_MSG, "Incorrect Current password");
             }
+        } else {
+            responseMap.put(RETURN_CODE, 1);
+            responseMap.put(RETURN_MSG, "User not found");
+        }
+        return responseMap;
+    }
+
+    public Map<String, Object> passwordReset(PasswordRequest request) {
+        Map<String, Object> responseMap = new HashMap<>();
+
+        UsersEntity user = getUser(request.getEmpId());
+
+        if (user != null) {
+                if (repository.updatePassword(bCryptPasswordEncoder.encode(request.getNewPassword()), request.getEmpId()) > 0) {
+                    responseMap.put(RETURN_CODE, 0);
+                    responseMap.put(RETURN_MSG, "Password changed successfully");
+                } else {
+                    responseMap.put(RETURN_CODE, 2);
+                    responseMap.put(RETURN_MSG, "Password update failed");
+                }
         } else {
             responseMap.put(RETURN_CODE, 1);
             responseMap.put(RETURN_MSG, "User not found");

@@ -13,4 +13,5 @@ public class MonthlyAttendanceDTO {
     private String empId;
     private String date;
     private String month;
+    private String year;
 }

@@ -53,9 +53,6 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest,@RequestHeader Map<String, String> reqHeaders) {
-        reqHeaders.forEach((key, value) -> {
-            System.out.println(String.format("Header '%s' = %s", key, value));
-        });
         UsersEntity user = service.getUser(loginRequest.getEmpId());
         if (user == null || !BCrypt.checkpw(loginRequest.getPassword(), user.getPassword())) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
@@ -77,6 +74,11 @@ public class AuthController {
     @PostMapping("/changePassword")
     public Map<String, Object> changePassword(@RequestBody PasswordRequest request) {
         return service.changePassword(request);
+    }
+
+    @PostMapping("/passwordReset")
+    public Map<String, Object> passwordReset(@RequestBody PasswordRequest request) {
+        return service.passwordReset(request);
     }
 
     @GetMapping("/corsTest")

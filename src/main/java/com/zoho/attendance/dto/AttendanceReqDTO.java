@@ -11,9 +11,9 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class AttendanceDTO {
+public class AttendanceReqDTO {
     private String empId;
-    private String clockDate;
+    private long dateTime;
     private String status;
     private String clockTime;
     private String location;

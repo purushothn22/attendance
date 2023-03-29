@@ -1,24 +1,17 @@
 package com.zoho.attendance.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.zoho.attendance.Util.ImageUtil;
 import com.zoho.attendance.dto.*;
 import com.zoho.attendance.entity.AttendanceEntity;
 import com.zoho.attendance.service.AttendanceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.context.request.WebRequest;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.zip.DataFormatException;
 
 
@@ -78,7 +71,7 @@ public class AttendanceController {
     }*/
 
     @PostMapping(path = "/markAttendance")
-    public AttendanceEntity markAttendance1(@RequestBody AttendanceDTO request) throws IOException {
+    public AttendanceEntity markAttendance1(@RequestBody AttendanceReqDTO request) throws IOException {
         return attendanceservice.markAttendance1(request);
     }
 
