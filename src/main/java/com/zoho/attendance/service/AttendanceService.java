@@ -86,7 +86,6 @@ public class AttendanceService {
                 }
             }
             int daysInMonthExcludingSunday = daysInMonth - sundaysInMonth;
-            System.out.println("Number of days in " + yearMonth + " excluding Sundays: " + daysInMonthExcludingSunday);
             daysCountMap.put(yearMonth.toString(), daysInMonthExcludingSunday);
             threeMonthsAgo = threeMonthsAgo.plus(1, ChronoUnit.MONTHS);
         }
