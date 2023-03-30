@@ -39,7 +39,8 @@ public class UsersService {
         return repository.findByEmpId(empId);
     }
 
-    public String addUser(UsersDTO user) {
+    public Map<String,Object> addUser(UsersDTO user) {
+        Map<String,Object> responseMap=new HashMap<>();
         String ret = null;
         user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
         UsersEntity userAccountList = repository.findByEmpId(user.getEmpId());
@@ -58,11 +59,13 @@ public class UsersService {
                 employeeInfo.setMultiLocation(user.getMultiLocation());
                 empRepository.save(employeeInfo);
             }
-
-            ret = "User account has been created, Emp Id = " + user.getEmpId();
-        }else
-            ret="User already registered";
-        return ret;
+            responseMap.put("returnCode",0);
+            responseMap.put("returnMsg","User account has been created, Emp Id = " + user.getEmpId());
+        }else {
+            responseMap.put("returnCode",1);
+            responseMap.put("returnMsg","User already registered");
+        }
+        return responseMap;
     }
 
     public Map<String, Object> changePassword(PasswordRequest request) {
