@@ -12,7 +12,10 @@ import org.springframework.stereotype.Service;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.sql.Time;
+import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.YearMonth;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.zip.DataFormatException;
 import java.util.zip.Deflater;
@@ -65,14 +68,46 @@ public class AttendanceService {
     }
 
     public List<Map<String, Object>> getAttendanceSummaryByEmp(String empId) {
-        return attendanceRepository.getAttendanceSummaryByEmp(empId);
+        List<Map<String, Object>> responseList = new ArrayList<>();
+        LocalDate today = LocalDate.now();
+        LocalDate threeMonthsAgo = today.minus(3, ChronoUnit.MONTHS);
+        Map<String, Object> daysCountMap = new HashMap<>();
+        while (!threeMonthsAgo.isAfter(today)) {
+            int year = threeMonthsAgo.getYear();
+            int month = threeMonthsAgo.getMonthValue(); // March
+            YearMonth yearMonth = YearMonth.of(year, month);
+            int daysInMonth = yearMonth.lengthOfMonth();
+            int sundaysInMonth = 0;
+            for (int i = 1; i <= daysInMonth; i++) {
+                LocalDate date = LocalDate.of(year, month, i);
+                DayOfWeek dayOfWeek = date.getDayOfWeek();
+                if (dayOfWeek == DayOfWeek.SUNDAY) {
+                    sundaysInMonth++;
+                }
+            }
+            int daysInMonthExcludingSunday = daysInMonth - sundaysInMonth;
+            System.out.println("Number of days in " + yearMonth + " excluding Sundays: " + daysInMonthExcludingSunday);
+            daysCountMap.put(yearMonth.toString(), daysInMonthExcludingSunday);
+            threeMonthsAgo = threeMonthsAgo.plus(1, ChronoUnit.MONTHS);
+        }
+        //List<String> daysList=attendanceRepository.getAllDays(request.getYear(),request.getMonth());
+        List<Map<String, Object>> summaryList = attendanceRepository.getAttendanceSummaryByEmp(empId);
+        Map<String,Object> responseMap;
+        for (Map<String, Object> summaryMap : summaryList) {
+            responseMap=new HashMap<>(summaryMap);
+            if (daysCountMap.containsKey(responseMap.get("yearMonth"))) {
+                responseMap.put("workingDays", daysCountMap.get(summaryMap.get("yearMonth")));
+            }
+            responseList.add(responseMap);
+        }
+        return responseList;
     }
 
     public List<Map<String, Object>> getAttendanceForEmp(MonthlyAttendanceDTO request) {
         List<Map<String, Object>> attendanceList = attendanceRepository.getAttendanceForEmp(request.getEmpId(), request.getMonth());
-        List<String> daysList=attendanceRepository.getAllDays(request.getYear(),request.getMonth());
+        List<String> daysList = attendanceRepository.getAllDays(request.getYear(), request.getMonth());
         Map<String, Map<String, Object>> attendanceMap = new HashMap<>();
-        for(String days:daysList){
+        for (String days : daysList) {
             attendanceMap.put(days, new HashMap<>());
             attendanceMap.get(days).put("date", days);
             attendanceMap.get(days).put("present", "N");
@@ -83,10 +118,10 @@ public class AttendanceService {
                 //attendanceMap.put(key, new HashMap<>());
                 attendanceMap.get(key).put("date", attendance.get("date"));
                 attendanceMap.get(key).put("present", "Y");
-                if(!attendanceMap.get(key).containsKey("attendance"))
-                attendanceMap.get(key).put("attendance", new ArrayList<>());
+                if (!attendanceMap.get(key).containsKey("attendance"))
+                    attendanceMap.get(key).put("attendance", new ArrayList<>());
             }
-            if(attendanceMap.get(key).containsKey("attendance")) {
+            if (attendanceMap.get(key).containsKey("attendance")) {
                 List<Map<String, Object>> attendanceListForDate = (List<Map<String, Object>>) attendanceMap.get(key).get("attendance");
                 Map<String, Object> attendanceForTime = new HashMap<>();
                 attendanceForTime.put("clockTime", attendance.get("clockTime"));
@@ -215,4 +250,6 @@ public class AttendanceService {
 
         return outputStream.toByteArray();
     }
+
+
 }
