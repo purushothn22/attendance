@@ -2,6 +2,7 @@ package com.zoho.attendance.repository;
 
 
 import com.zoho.attendance.entity.AttendanceEntity;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
@@ -16,14 +17,17 @@ import java.util.Map;
 public interface AttendanceRepository extends CrudRepository<AttendanceEntity, String> {
 
     public static final String ATTENDANCE_BY_DATE= "SELECT " +
-            "emp_id,date,clock_date,status,clock_time,location,latitude,longitude,photo,checkin " +
+            "emp_id,date,clock_date,status,checkin_time,checkout_time,location,latitude,longitude,photo,checkin " +
             "FROM attendance where date(date)=?1";
 
     public static final String CHECK_ATTENDANCE= "SELECT count(*) FROM attendance " +
             "where emp_id=?1 and date(date)=?2";
 
+    public static final String CHECK_CLOCK_OUT= "Select count(*) from attendance " +
+            "where emp_id=?1 and date(date)=?2 and checkout_time is null";
+
     public static final String ATTENDANCE_BY_MONTH= "SELECT " +
-            "emp_id,date,clock_date,status,clock_time,location,latitude,longitude,photo,checkin " +
+            "emp_id,date,clock_date,status,checkin_time,checkout_time,location,latitude,longitude,photo,checkin " +
             "FROM attendance where emp_id=?1 and MONTH(date)=?2 and year(date)=?3 order by date";
 
     public static final String EMP_ATTENDANCE_SUMMARY= "SELECT " +
@@ -31,7 +35,7 @@ public interface AttendanceRepository extends CrudRepository<AttendanceEntity, S
             "FROM attendance where emp_id=?1 and status='present' and date >= now()-interval 3 month GROUP BY concat(MONTHNAME(date), ' ',YEAR(date)),concat(YEAR(date),'-',LPAD(month(date),2,0))";
 
     public static final String ATTENDANCE_DET_FOR_EMPLOYEE= "SELECT " +
-            "emp_id as \"empId\",concat(year(date),'-',LPAD(month(date),2,0),'-',LPAD(day(date),2,0)) as \"date\",status,clock_time as \"clockTime\",location,latitude,longitude,checkin as \"logCount\" " +
+            "emp_id as \"empId\",concat(year(date),'-',LPAD(month(date),2,0),'-',LPAD(day(date),2,0)) as \"date\",status,checkin_time as \"checkinTime\",checkout_time as \"checkoutTime\",location,latitude,longitude,checkin as \"logCount\" " +
             "FROM attendance where emp_id=?1 and MONTH(date)=?2 and weekday(date)!=6 order by date";
 
     public static final String GET_ALL_DAYS="" +
@@ -44,11 +48,16 @@ public interface AttendanceRepository extends CrudRepository<AttendanceEntity, S
             ") a " +
             "where a.Date between  DATE_FORMAT(CONCAT(?1, '-', ?2, '-01'), '%Y-%m-%d')  and LAST_DAY(CONCAT(?1, '-', ?2, '-01')) and weekday(date)!=6 order by a.Date";
 
+    public static final String UPDATE_CLOCK_OUT="UPDATE attendance SET checkout_time=TIME(?1) where emp_id=?2 and date(date)=?3 and checkin=?4";
+
     @Query(value=ATTENDANCE_BY_DATE, nativeQuery = true)
     List<AttendanceEntity> getAttendanceByDate(String reqDate);
 
     @Query(value=CHECK_ATTENDANCE, nativeQuery = true)
     int checkAttendance(String empId,String reqDate);
+
+    @Query(value=CHECK_CLOCK_OUT, nativeQuery = true)
+    int checkClockOut(String empId,String reqDate);
 
     @Query(value=ATTENDANCE_BY_MONTH, nativeQuery = true)
     List<AttendanceEntity> getAttendanceByMonth(String empId,String month,String year);
@@ -61,6 +70,11 @@ public interface AttendanceRepository extends CrudRepository<AttendanceEntity, S
 
     @Query(value=GET_ALL_DAYS, nativeQuery = true)
     List<String> getAllDays(String year,String month);
+
+    @Transactional
+    @Modifying
+    @Query(value=UPDATE_CLOCK_OUT, nativeQuery = true)
+    int updateClockOutTime(String time,String empId,String date,int logCount);
 
     @Transactional
     void deleteByEmpId(String empId);

@@ -52,6 +52,12 @@ public class AttendanceService {
         return responseMap;
     }
 
+    public Map<String, Object> checkClockOut(MonthlyAttendanceDTO request) {
+        Map<String, Object> responseMap = new HashMap<>();
+        responseMap.put("count", attendanceRepository.checkClockOut(request.getEmpId(), request.getDate()));
+        return responseMap;
+    }
+
     public List<AttendanceDTO> getAttendanceByMonth(MonthlyAttendanceDTO request) throws DataFormatException, IOException {
         List<AttendanceDTO> responseList = new ArrayList<>();
 /*        List<AttendanceEntity> responseList = attendanceRepository.getAttendanceByMonth(request.getEmpId(), request.getMonth())
@@ -91,9 +97,9 @@ public class AttendanceService {
         }
         //List<String> daysList=attendanceRepository.getAllDays(request.getYear(),request.getMonth());
         List<Map<String, Object>> summaryList = attendanceRepository.getAttendanceSummaryByEmp(empId);
-        Map<String,Object> responseMap;
+        Map<String, Object> responseMap;
         for (Map<String, Object> summaryMap : summaryList) {
-            responseMap=new HashMap<>(summaryMap);
+            responseMap = new HashMap<>(summaryMap);
             if (daysCountMap.containsKey(responseMap.get("yearMonth"))) {
                 responseMap.put("workingDays", daysCountMap.get(summaryMap.get("yearMonth")));
             }
@@ -123,7 +129,8 @@ public class AttendanceService {
             if (attendanceMap.get(key).containsKey("attendance")) {
                 List<Map<String, Object>> attendanceListForDate = (List<Map<String, Object>>) attendanceMap.get(key).get("attendance");
                 Map<String, Object> attendanceForTime = new HashMap<>();
-                attendanceForTime.put("clockTime", attendance.get("clockTime"));
+                attendanceForTime.put("checkinTime", attendance.get("checkinTime"));
+                attendanceForTime.put("checkoutTime", attendance.get("checkoutTime"));
                 attendanceForTime.put("status", attendance.get("status"));
                 attendanceForTime.put("location", attendance.get("location"));
                 attendanceForTime.put("latitude", attendance.get("latitude"));
@@ -149,28 +156,52 @@ public class AttendanceService {
         attendance.setDate(sqlDate);
         logCount += attendanceRepository.checkAttendance(request.getEmpId(), clockDate);
         attendance.setLogCount(logCount);
-        Time sqlTime = Time.valueOf(request.getClockTime());
-        attendance.setClockTime(sqlTime);
+        Time sqlTime = Time.valueOf(request.getCheckinTime());
+        attendance.setCheckinTime(sqlTime);
         return attendanceRepository.save(attendance);
     }
 
-    public AttendanceEntity markAttendance1(AttendanceReqDTO request) throws IOException {
+    public Map<String, Object> markAttendance1(AttendanceReqDTO request) throws IOException {
+        Map<String, Object> responseMap = new HashMap<>();
         String ret = null;
-        int logCount = 0;
+        int logCount = 1;
         AttendanceEntity attendance = modelMapper.map(request, AttendanceEntity.class);
         java.sql.Date sqlDate = new java.sql.Date(request.getDateTime());
         LocalDate localDate = sqlDate.toLocalDate();
         String clockDate = localDate.getYear() + "-" + localDate.getMonthValue() + "-" + localDate.getDayOfMonth();
         attendance.setClockDate(clockDate);
         attendance.setDate(sqlDate);
-        logCount += attendanceRepository.checkAttendance(request.getEmpId(), clockDate);
-        attendance.setLogCount(logCount);
-        Time sqlTime = Time.valueOf(request.getClockTime());
-        attendance.setClockTime(sqlTime);
-        byte[] imageBytes = Base64.getDecoder().decode(request.getBase64Image());
+        if (request.getCheckinFlag() != null) {
+            if (request.getCheckinFlag().equalsIgnoreCase("I")) {
+                logCount += attendanceRepository.checkAttendance(request.getEmpId(), clockDate);
+                attendance.setLogCount(logCount);
+                Time sqlTime = Time.valueOf(request.getCheckinTime());
+                attendance.setCheckinTime(sqlTime);
+                byte[] imageBytes = Base64.getDecoder().decode(request.getBase64Image());
+                attendance.setPhoto(imageBytes);
 
-        attendance.setPhoto(imageBytes);
-        return attendanceRepository.save(attendance);
+                if (attendanceRepository.save(attendance) != null) {
+                    responseMap.put("returnCode", 0);
+                    responseMap.put("returnMsg", "Insert Success");
+                } else {
+                    responseMap.put("returnCode", 1);
+                    responseMap.put("returnMsg", "Insert Failure");
+                }
+                return responseMap;
+            } else {
+                if (attendanceRepository.updateClockOutTime(request.getCheckoutTime(), request.getEmpId(), clockDate, request.getLogCount()+1) > 0) {
+                    responseMap.put("returnCode", 0);
+                    responseMap.put("returnMsg", "Update Success");
+                } else {
+                    responseMap.put("returnCode", 1);
+                    responseMap.put("returnMsg", "update Failure");
+                }
+                return responseMap;
+            }
+        }
+        responseMap.put("returnCode", 2);
+        responseMap.put("returnMsg", "CheckinFlag null");
+        return responseMap;
     }
 
      /*public static byte[] compress(byte[] data) throws IOException {

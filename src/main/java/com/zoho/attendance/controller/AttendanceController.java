@@ -46,6 +46,11 @@ public class AttendanceController {
         return attendanceservice.checkAttendance(request);
     }
 
+    @PostMapping(path = "/checkClockOut")
+    public Map<String, Object> checkClockOut(@RequestBody MonthlyAttendanceDTO request) {
+        return attendanceservice.checkClockOut(request);
+    }
+
     @PostMapping(path = "/getAttendanceByMonth")
     public List<AttendanceDTO> getAttendanceByMonth(@RequestBody MonthlyAttendanceDTO request) throws DataFormatException, IOException {
         return attendanceservice.getAttendanceByMonth(request);
@@ -71,7 +76,7 @@ public class AttendanceController {
     }*/
 
     @PostMapping(path = "/markAttendance")
-    public AttendanceEntity markAttendance1(@RequestBody AttendanceReqDTO request) throws IOException {
+    public Map<String, Object> markAttendance(@RequestBody AttendanceReqDTO request) throws IOException {
         return attendanceservice.markAttendance1(request);
     }
 

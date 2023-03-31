@@ -15,9 +15,12 @@ public class AttendanceReqDTO {
     private String empId;
     private long dateTime;
     private String status;
-    private String clockTime;
+    private String checkinTime;
+    private String checkoutTime;
     private String location;
     private String latitude;
     private String longitude;
     private String base64Image;
+    private String checkinFlag;
+    private int logCount;
 }

@@ -24,7 +24,8 @@ public class AttendanceEntity {
     private String clockDate;
     private Date date;
     private String status;
-    private Time clockTime;
+    private Time checkinTime;
+    private Time checkoutTime;
     private String location;
     private String latitude;
     private String longitude;
