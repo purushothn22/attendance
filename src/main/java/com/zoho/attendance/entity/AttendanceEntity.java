@@ -26,7 +26,8 @@ public class AttendanceEntity {
     private String status;
     private Time checkinTime;
     private Time checkoutTime;
-    private String location;
+    private String checkinLocation;
+    private String checkoutLocation;
     private String latitude;
     private String longitude;
     @Lob

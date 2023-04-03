@@ -6,6 +6,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.sql.Time;
+
 
 @Data
 @Builder
@@ -15,9 +17,12 @@ public class AttendanceDTO {
     private String empId;
     private String clockDate;
     private String status;
-    private String clockTime;
-    private String location;
+    private Time checkinTime;
+    private Time checkoutTime;
+    private String checkinLocation;
+    private String checkoutLocation;
     private String latitude;
     private String longitude;
     private String base64Image;
+    private int logCount;
 }

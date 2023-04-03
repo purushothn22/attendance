@@ -40,6 +40,7 @@ public class AttendanceService {
         List<AttendanceEntity> entityList = attendanceRepository.getAttendanceByDate(reqDate);
         for (AttendanceEntity entity : entityList) {
             AttendanceDTO attendance = modelMapper.map(entity, AttendanceDTO.class);
+            if(entity.getPhoto()!=null)
             attendance.setBase64Image(Base64.getEncoder().encodeToString(entity.getPhoto()));
             responseList.add(attendance);
         }
@@ -67,6 +68,7 @@ public class AttendanceService {
         List<AttendanceEntity> entityList = attendanceRepository.getAttendanceByMonth(request.getEmpId(), request.getMonth(), request.getYear());
         for (AttendanceEntity entity : entityList) {
             AttendanceDTO attendance = modelMapper.map(entity, AttendanceDTO.class);
+            if(entity.getPhoto()!=null)
             attendance.setBase64Image(Base64.getEncoder().encodeToString(entity.getPhoto()));
             responseList.add(attendance);
         }
@@ -132,7 +134,8 @@ public class AttendanceService {
                 attendanceForTime.put("checkinTime", attendance.get("checkinTime"));
                 attendanceForTime.put("checkoutTime", attendance.get("checkoutTime"));
                 attendanceForTime.put("status", attendance.get("status"));
-                attendanceForTime.put("location", attendance.get("location"));
+                attendanceForTime.put("location", attendance.get("checkinLocation"));
+                attendanceForTime.put("checkoutLocation", attendance.get("checkoutLocation"));
                 attendanceForTime.put("latitude", attendance.get("latitude"));
                 attendanceForTime.put("longitude", attendance.get("longitude"));
                 attendanceForTime.put("logCount", attendance.get("logCount"));
@@ -177,9 +180,11 @@ public class AttendanceService {
                 attendance.setLogCount(logCount);
                 Time sqlTime = Time.valueOf(request.getCheckinTime());
                 attendance.setCheckinTime(sqlTime);
-                byte[] imageBytes = Base64.getDecoder().decode(request.getBase64Image());
-                attendance.setPhoto(imageBytes);
-
+                attendance.setCheckinLocation(request.getLocation());
+                if(request.getBase64Image()!=null && !request.getBase64Image().isEmpty()) {
+                    byte[] imageBytes = Base64.getDecoder().decode(request.getBase64Image());
+                    attendance.setPhoto(imageBytes);
+                }
                 if (attendanceRepository.save(attendance) != null) {
                     responseMap.put("returnCode", 0);
                     responseMap.put("returnMsg", "Insert Success");
@@ -187,17 +192,16 @@ public class AttendanceService {
                     responseMap.put("returnCode", 1);
                     responseMap.put("returnMsg", "Insert Failure");
                 }
-                return responseMap;
             } else {
-                if (attendanceRepository.updateClockOutTime(request.getCheckoutTime(), request.getEmpId(), clockDate, request.getLogCount()+1) > 0) {
+                if (attendanceRepository.updateClockOutTime(request.getCheckoutTime(),request.getLocation(), request.getEmpId(), clockDate, request.getLogCount()) > 0) {
                     responseMap.put("returnCode", 0);
                     responseMap.put("returnMsg", "Update Success");
                 } else {
                     responseMap.put("returnCode", 1);
                     responseMap.put("returnMsg", "update Failure");
                 }
-                return responseMap;
             }
+            return responseMap;
         }
         responseMap.put("returnCode", 2);
         responseMap.put("returnMsg", "CheckinFlag null");
