@@ -134,7 +134,7 @@ public class AttendanceService {
                 attendanceForTime.put("checkinTime", attendance.get("checkinTime"));
                 attendanceForTime.put("checkoutTime", attendance.get("checkoutTime"));
                 attendanceForTime.put("status", attendance.get("status"));
-                attendanceForTime.put("location", attendance.get("checkinLocation"));
+                attendanceForTime.put("checkinLocation", attendance.get("checkinLocation"));
                 attendanceForTime.put("checkoutLocation", attendance.get("checkoutLocation"));
                 attendanceForTime.put("latitude", attendance.get("latitude"));
                 attendanceForTime.put("longitude", attendance.get("longitude"));
