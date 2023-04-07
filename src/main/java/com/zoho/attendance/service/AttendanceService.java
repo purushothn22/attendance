@@ -40,8 +40,10 @@ public class AttendanceService {
         List<AttendanceEntity> entityList = attendanceRepository.getAttendanceByDate(reqDate);
         for (AttendanceEntity entity : entityList) {
             AttendanceDTO attendance = modelMapper.map(entity, AttendanceDTO.class);
-            if(entity.getPhoto()!=null)
-            attendance.setBase64Image(Base64.getEncoder().encodeToString(entity.getPhoto()));
+            attendance.setInPhoto(decompress(entity.getPhoto()));
+            attendance.setOutPhoto(decompress(entity.getCheckoutPhoto()));
+            attendance.setInImageType(entity.getImageType());
+            attendance.setOutImageType(entity.getOutImageType());
             responseList.add(attendance);
         }
         return responseList;
@@ -68,8 +70,10 @@ public class AttendanceService {
         List<AttendanceEntity> entityList = attendanceRepository.getAttendanceByMonth(request.getEmpId(), request.getMonth(), request.getYear());
         for (AttendanceEntity entity : entityList) {
             AttendanceDTO attendance = modelMapper.map(entity, AttendanceDTO.class);
-            if(entity.getPhoto()!=null)
-            attendance.setBase64Image(Base64.getEncoder().encodeToString(entity.getPhoto()));
+            attendance.setInPhoto(decompress(entity.getPhoto()));
+            attendance.setOutPhoto(decompress(entity.getCheckoutPhoto()));
+            attendance.setInImageType(entity.getImageType());
+            attendance.setOutImageType(entity.getOutImageType());
             responseList.add(attendance);
         }
         return responseList;
@@ -181,10 +185,7 @@ public class AttendanceService {
                 Time sqlTime = Time.valueOf(request.getCheckinTime());
                 attendance.setCheckinTime(sqlTime);
                 attendance.setCheckinLocation(request.getLocation());
-                if(request.getBase64Image()!=null && !request.getBase64Image().isEmpty()) {
-                    byte[] imageBytes = Base64.getDecoder().decode(request.getBase64Image());
-                    attendance.setPhoto(imageBytes);
-                }
+                attendance.setPhoto(compress(request.getBase64Image()));
                 if (attendanceRepository.save(attendance) != null) {
                     responseMap.put("returnCode", 0);
                     responseMap.put("returnMsg", "Insert Success");
@@ -193,7 +194,7 @@ public class AttendanceService {
                     responseMap.put("returnMsg", "Insert Failure");
                 }
             } else {
-                if (attendanceRepository.updateClockOutTime(request.getCheckoutTime(),request.getLocation(), request.getEmpId(), clockDate, request.getLogCount()) > 0) {
+                if (attendanceRepository.updateClockOutTime(request.getCheckoutTime(), request.getLocation(), compress(request.getBase64Image()), request.getImageType(), request.getLatitude(), request.getLongitude(), request.getEmpId(), clockDate, request.getLogCount()) > 0) {
                     responseMap.put("returnCode", 0);
                     responseMap.put("returnMsg", "Update Success");
                 } else {
@@ -242,8 +243,15 @@ public class AttendanceService {
         return output;
     }*/
 
-    public byte[] compress(byte[] input) throws IOException {
+    public byte[] compress(String input) throws IOException {
 
+        if (input != null && !input.isEmpty()) {
+            byte[] imageBytes = Base64.getDecoder().decode(input);
+            return imageBytes;
+        } else {
+            return null;
+        }
+        /*
         Deflater deflater = new Deflater();
         deflater.setInput(input);
 
@@ -260,12 +268,16 @@ public class AttendanceService {
         byte[] compressedData = outputStream.toByteArray();
         System.out.println("Original: " + input.length / 1024 + " Kb");
         System.out.println("Compressed: " + outputStream.toByteArray().length / 1024 + " Kb");
-        return outputStream.toByteArray();
+        return outputStream.toByteArray();*/
     }
 
-    public byte[] decompress(byte[] compressedData)
+    public String decompress(byte[] compressedData)
             throws IOException {
-        // decompress data
+        if (compressedData != null)
+            return Base64.getEncoder().encodeToString(compressedData);
+        else
+            return null;
+       /* // decompress data
         Inflater inflater = new Inflater();
         inflater.setInput(compressedData);
 
@@ -282,7 +294,7 @@ public class AttendanceService {
         }
         outputStream.close();
 
-        return outputStream.toByteArray();
+        return outputStream.toByteArray();*/
     }
 
 

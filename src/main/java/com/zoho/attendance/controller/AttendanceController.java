@@ -1,7 +1,6 @@
 package com.zoho.attendance.controller;
 
 import com.zoho.attendance.dto.*;
-import com.zoho.attendance.entity.AttendanceEntity;
 import com.zoho.attendance.service.AttendanceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -11,7 +10,10 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.context.request.WebRequest;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.zip.DataFormatException;
 
 

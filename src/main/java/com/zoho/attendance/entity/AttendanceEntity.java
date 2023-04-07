@@ -33,7 +33,12 @@ public class AttendanceEntity {
     @Lob
     @Basic(fetch = FetchType.LAZY)
     private byte[] photo;
+    private String imageType;
+    private byte[] checkoutPhoto;
+    private String outImageType;
     @Id
     @Column(name = "checkin")
     private int logCount;
+    private String outLatitude;
+    private String outLongitude;
 }

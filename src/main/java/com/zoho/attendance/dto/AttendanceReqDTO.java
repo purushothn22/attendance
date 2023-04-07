@@ -21,6 +21,7 @@ public class AttendanceReqDTO {
     private String latitude;
     private String longitude;
     private String base64Image;
+    private String imageType;
     private String checkinFlag;
     private int logCount;
 }

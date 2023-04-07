@@ -23,6 +23,11 @@ public class AttendanceDTO {
     private String checkoutLocation;
     private String latitude;
     private String longitude;
-    private String base64Image;
+    private String inPhoto;
+    private String inImageType;
+    private String outPhoto;
+    private String outImageType;
+    private String outLatitude;
+    private String outLongitude;
     private int logCount;
 }

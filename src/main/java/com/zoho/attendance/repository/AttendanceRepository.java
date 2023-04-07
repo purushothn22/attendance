@@ -16,8 +16,8 @@ import java.util.Map;
 @Repository
 public interface AttendanceRepository extends CrudRepository<AttendanceEntity, String> {
 
-    public static final String ATTENDANCE_BY_DATE= "SELECT " +
-            "emp_id,date,clock_date,status,checkin_time,checkout_time,checkin_location,checkout_location,latitude,longitude,photo,checkin " +
+    public static final String  ATTENDANCE_BY_DATE= "SELECT " +
+            "emp_id,date,clock_date,status,checkin_time,checkout_time,checkin_location,checkout_location,latitude,longitude,photo,image_Type,checkout_photo,out_image_type,checkin,out_latitude,out_longitude " +
             "FROM attendance where date(date)=?1";
 
     public static final String CHECK_ATTENDANCE= "SELECT count(*) FROM attendance " +
@@ -27,7 +27,7 @@ public interface AttendanceRepository extends CrudRepository<AttendanceEntity, S
             "where emp_id=?1 and date(date)=?2 and checkout_time is null";
 
     public static final String ATTENDANCE_BY_MONTH= "SELECT " +
-            "emp_id,date,clock_date,status,checkin_time,checkout_time,checkin_location,checkout_location,latitude,longitude,photo,checkin " +
+            "emp_id,date,clock_date,status,checkin_time,checkout_time,checkin_location,checkout_location,latitude,longitude,photo,image_Type,checkout_photo,out_image_type,checkin,out_latitude,out_longitude " +
             "FROM attendance where emp_id=?1 and MONTH(date)=?2 and year(date)=?3 order by date";
 
     public static final String EMP_ATTENDANCE_SUMMARY= "SELECT " +
@@ -48,7 +48,7 @@ public interface AttendanceRepository extends CrudRepository<AttendanceEntity, S
             ") a " +
             "where a.Date between  DATE_FORMAT(CONCAT(?1, '-', ?2, '-01'), '%Y-%m-%d')  and LAST_DAY(CONCAT(?1, '-', ?2, '-01')) and weekday(date)!=6 order by a.Date";
 
-    public static final String UPDATE_CLOCK_OUT="UPDATE attendance SET checkout_time=TIME(?1),checkout_location=?2 where emp_id=?3 and date(date)=?4 and checkin=?5";
+    public static final String UPDATE_CLOCK_OUT="UPDATE attendance SET checkout_time=TIME(?1),checkout_location=?2,checkout_photo=?3,out_image_type=?4,out_latitude=?5,out_longitude=?6 where emp_id=?7 and date(date)=?8 and checkin=?9";
 
     @Query(value=ATTENDANCE_BY_DATE, nativeQuery = true)
     List<AttendanceEntity> getAttendanceByDate(String reqDate);
@@ -74,7 +74,7 @@ public interface AttendanceRepository extends CrudRepository<AttendanceEntity, S
     @Transactional
     @Modifying
     @Query(value=UPDATE_CLOCK_OUT, nativeQuery = true)
-    int updateClockOutTime(String time,String location,String empId,String date,int logCount);
+    int updateClockOutTime(String time,String location,byte[] checkoutPhoto,String imageType,String latitude,String longitude,String empId,String date,int logCount);
 
     @Transactional
     void deleteByEmpId(String empId);
