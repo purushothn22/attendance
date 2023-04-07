@@ -1,8 +1,16 @@
 package com.zoho.attendance.controller;
 
 import com.zoho.attendance.dto.*;
+import com.zoho.attendance.entity.AttendanceHistoryEntity;
 import com.zoho.attendance.service.AttendanceService;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.config.RequestConfig;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -39,13 +47,29 @@ public class AttendanceController {
     }
 
     @PostMapping(path = "/getDailyAttendance")
-    public List<AttendanceDTO> getAttendanceByDate(@RequestBody AttendanceReportDTO request) throws DataFormatException, IOException {
-        return attendanceservice.getAttendanceByDate(request.getDate());
+    public ResponseEntity<List<AttendanceDTO>> getAttendanceByDate(@RequestBody AttendanceReportDTO request) throws DataFormatException, IOException {
+        RequestConfig requestConfig = RequestConfig.custom()
+                .setSocketTimeout(60000)
+                .setConnectTimeout(5000)
+                .build();
+
+        HttpClient httpClient = HttpClientBuilder.create()
+                .setDefaultRequestConfig(requestConfig)
+                .build();
+        return ResponseEntity.ok(attendanceservice.getAttendanceByDate(request.getDate()));
     }
 
     @PostMapping(path = "/checkAttendance")
     public Map<String, Object> checkAttendance(@RequestBody MonthlyAttendanceDTO request) {
         return attendanceservice.checkAttendance(request);
+    }
+
+    @PostMapping(path = "/attendanceHistory")
+    public Page<AttendanceHistoryEntity> getAttendanceHistory(@RequestParam(defaultValue = "0") int page,
+                                                              @RequestParam(defaultValue = "10") int pageSize, @RequestBody AttendanceHistoryDTO request) {
+        Sort sort = Sort.by(Sort.Direction.DESC, "date");
+        Pageable pageable = PageRequest.of(page, pageSize, sort);
+        return attendanceservice.getAttendanceHistory(request, pageable);
     }
 
     @PostMapping(path = "/checkClockOut")

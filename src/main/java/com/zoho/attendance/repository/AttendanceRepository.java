@@ -2,6 +2,11 @@ package com.zoho.attendance.repository;
 
 
 import com.zoho.attendance.entity.AttendanceEntity;
+import com.zoho.attendance.entity.AttendanceHistoryEntity;
+import com.zoho.attendance.entity.AttendanceId;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
@@ -14,7 +19,7 @@ import java.util.List;
 import java.util.Map;
 
 @Repository
-public interface AttendanceRepository extends CrudRepository<AttendanceEntity, String> {
+public interface AttendanceRepository extends CrudRepository<AttendanceEntity, AttendanceId> {
 
     public static final String  ATTENDANCE_BY_DATE= "SELECT " +
             "emp_id,date,clock_date,status,checkin_time,checkout_time,checkin_location,checkout_location,latitude,longitude,photo,image_Type,checkout_photo,out_image_type,checkin,out_latitude,out_longitude " +

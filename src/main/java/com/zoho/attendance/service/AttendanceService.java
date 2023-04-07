@@ -1,12 +1,17 @@
 package com.zoho.attendance.service;
 
 import com.zoho.attendance.dto.AttendanceDTO;
+import com.zoho.attendance.dto.AttendanceHistoryDTO;
 import com.zoho.attendance.dto.AttendanceReqDTO;
 import com.zoho.attendance.dto.MonthlyAttendanceDTO;
 import com.zoho.attendance.entity.AttendanceEntity;
+import com.zoho.attendance.entity.AttendanceHistoryEntity;
+import com.zoho.attendance.repository.AttendanceHistoryRepository;
 import com.zoho.attendance.repository.AttendanceRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayOutputStream;
@@ -28,6 +33,8 @@ public class AttendanceService {
     private AttendanceRepository attendanceRepository;
     @Autowired
     private ModelMapper modelMapper;
+    @Autowired
+    private AttendanceHistoryRepository historyRepo;
 
 
     public List<AttendanceDTO> getAttendanceByDate(String reqDate) throws DataFormatException, IOException {
@@ -53,6 +60,10 @@ public class AttendanceService {
         Map<String, Object> responseMap = new HashMap<>();
         responseMap.put("count", attendanceRepository.checkAttendance(request.getEmpId(), request.getDate()));
         return responseMap;
+    }
+
+    public Page<AttendanceHistoryEntity> getAttendanceHistory(AttendanceHistoryDTO request, Pageable pageable) {
+        return historyRepo.getAttendanceHistory(request.getDate().isBlank() ? null : request.getDate(), request.getEmpId().isBlank() ? null : request.getEmpId(), pageable);
     }
 
     public Map<String, Object> checkClockOut(MonthlyAttendanceDTO request) {
@@ -243,58 +254,50 @@ public class AttendanceService {
         return output;
     }*/
 
-    public byte[] compress(String input) throws IOException {
+    public byte[] compress(String base64Img) throws IOException {
 
-        if (input != null && !input.isEmpty()) {
-            byte[] imageBytes = Base64.getDecoder().decode(input);
-            return imageBytes;
-        } else {
+        if (base64Img != null && !base64Img.isEmpty()) {
+            byte[] input = Base64.getDecoder().decode(base64Img);
+            /*Deflater deflater = new Deflater();
+            deflater.setInput(input);
+
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream(input.length);
+
+            deflater.finish();
+            byte[] buffer = new byte[1024];
+            while (!deflater.finished()) {
+                int count = deflater.deflate(buffer);
+                outputStream.write(buffer, 0, count);
+            }
+            outputStream.close();
+            return outputStream.toByteArray();*/
+            return input;
+        } else
             return null;
-        }
-        /*
-        Deflater deflater = new Deflater();
-        deflater.setInput(input);
-
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream(input.length);
-
-        deflater.finish();
-        byte[] buffer = new byte[1024];
-        while (!deflater.finished()) {
-            int count = deflater.deflate(buffer);
-            outputStream.write(buffer, 0, count);
-        }
-        outputStream.close();
-
-        byte[] compressedData = outputStream.toByteArray();
-        System.out.println("Original: " + input.length / 1024 + " Kb");
-        System.out.println("Compressed: " + outputStream.toByteArray().length / 1024 + " Kb");
-        return outputStream.toByteArray();*/
     }
 
-    public String decompress(byte[] compressedData)
-            throws IOException {
-        if (compressedData != null)
-            return Base64.getEncoder().encodeToString(compressedData);
-        else
-            return null;
-       /* // decompress data
-        Inflater inflater = new Inflater();
-        inflater.setInput(compressedData);
+    public String decompress(byte[] compressedData) throws IOException {
+        if (compressedData != null) {
+            // decompress data
+/*            Inflater inflater = new Inflater();
+            inflater.setInput(compressedData);
 
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream(compressedData.length);
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream(compressedData.length);
 
-        byte[] buffer = new byte[1024];
-        while (!inflater.finished()) {
-            try {
-                int count = inflater.inflate(buffer);
-                outputStream.write(buffer, 0, count);
-            } catch (DataFormatException e) {
-                // handle exception
+            byte[] buffer = new byte[1024];
+            while (!inflater.finished()) {
+                try {
+                    int count = inflater.inflate(buffer);
+                    outputStream.write(buffer, 0, count);
+                } catch (DataFormatException e) {
+                    // handle exception
+                }
             }
-        }
-        outputStream.close();
-
-        return outputStream.toByteArray();*/
+            outputStream.close();
+            System.out.println("decompress-->"+outputStream);*/
+            return Base64.getEncoder().encodeToString(compressedData);
+        } else
+            return null;
     }
 
 

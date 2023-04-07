@@ -46,6 +46,7 @@ public class UsersService {
         UsersEntity userAccountList = repository.findByEmpId(user.getEmpId());
         if (userAccountList == null) {
             UsersEntity newUser = modelMapper.map(user, UsersEntity.class);
+            newUser.setRole(user.getRole().toUpperCase());
             repository.save(newUser);
             if (user.getRole().equalsIgnoreCase("ADMIN")) {
                 AdminInfoEntity adminInfo = modelMapper.map(user, AdminInfoEntity.class);
