@@ -37,7 +37,7 @@ public interface AttendanceRepository extends CrudRepository<AttendanceEntity, A
 
     public static final String EMP_ATTENDANCE_SUMMARY= "SELECT " +
             "count(distinct clock_date) as \"daysPresent\",concat(MONTHNAME(date), ' ',YEAR(date)) as \"month\",concat(YEAR(date),'-',LPAD(month(date),2,0)) as \"yearMonth\" " +
-            "FROM attendance where emp_id=?1 and status='present' and date >= now()-interval 3 month GROUP BY concat(MONTHNAME(date), ' ',YEAR(date)),concat(YEAR(date),'-',LPAD(month(date),2,0))";
+            "FROM attendance where emp_id=?1 and status='present' and date >= now()-interval 3 month and weekday(date)!=6 GROUP BY concat(MONTHNAME(date), ' ',YEAR(date)),concat(YEAR(date),'-',LPAD(month(date),2,0))";
 
     public static final String ATTENDANCE_DET_FOR_EMPLOYEE= "SELECT " +
             "emp_id as \"empId\",concat(year(date),'-',LPAD(month(date),2,0),'-',LPAD(day(date),2,0)) as \"date\",status,checkin_time as \"checkinTime\",checkout_time as \"checkoutTime\",checkin_location as \"checkinLocation\",checkout_location as \"checkoutLocation\",latitude,longitude,checkin as \"logCount\" " +
