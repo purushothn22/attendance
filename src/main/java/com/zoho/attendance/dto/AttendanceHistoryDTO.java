@@ -12,4 +12,6 @@ import lombok.NoArgsConstructor;
 public class AttendanceHistoryDTO {
     private String empId;
     private String date;
+    private String month;
+    private String year;
 }

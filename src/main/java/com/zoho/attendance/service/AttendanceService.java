@@ -63,7 +63,11 @@ public class AttendanceService {
     }
 
     public Page<AttendanceHistoryEntity> getAttendanceHistory(AttendanceHistoryDTO request, Pageable pageable) {
-        return historyRepo.getAttendanceHistory(request.getDate().isBlank() ? null : request.getDate(), request.getEmpId().isBlank() ? null : request.getEmpId(), pageable);
+        return historyRepo.getAttendanceHistory(request.getDate().isBlank() ? null : request.getDate(),
+                request.getEmpId().isBlank() ? null : request.getEmpId(),
+                request.getMonth().isBlank() ? null : request.getMonth(),
+                request.getYear().isBlank() ? null : request.getYear(),
+                pageable);
     }
 
     public Map<String, Object> checkClockOut(MonthlyAttendanceDTO request) {
