@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -20,6 +21,10 @@ public class AdminService {
     private AdminInfoRepository repository;
     @Autowired
     private ModelMapper modelMapper;
+
+    public List<AdminInfoEntity> findAll() {
+        return repository.findAll();
+    }
 
     public AdminInfoEntity findAdmin(String empId) {
         return repository.findByEmpId(empId);

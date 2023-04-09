@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -19,6 +20,11 @@ public class AdminController {
     @Autowired
     public AdminController(AdminService service) {
         this.service = service;
+    }
+
+    @GetMapping()
+    public List<AdminInfoEntity> findAll() {
+        return service.findAll();
     }
 
     @GetMapping(path = "/{empId}")
