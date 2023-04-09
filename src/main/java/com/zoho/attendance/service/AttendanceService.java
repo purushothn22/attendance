@@ -63,10 +63,10 @@ public class AttendanceService {
     }
 
     public Page<AttendanceHistoryEntity> getAttendanceHistory(AttendanceHistoryDTO request, Pageable pageable) {
-        return historyRepo.getAttendanceHistory(request.getDate().isBlank() ? null : request.getDate(),
-                request.getEmpId().isBlank() ? null : request.getEmpId(),
-                request.getMonth().isBlank() ? null : request.getMonth(),
-                request.getYear().isBlank() ? null : request.getYear(),
+        return historyRepo.getAttendanceHistory(request.getDate()!=null && request.getDate().isBlank() ? null : request.getDate(),
+                request.getEmpId()!=null && request.getEmpId().isBlank() ? null : request.getEmpId(),
+                request.getMonth()!=null && request.getMonth().isBlank() ? null : request.getMonth(),
+                request.getYear()!=null && request.getYear().isBlank() ? null : request.getYear(),
                 pageable);
     }
 

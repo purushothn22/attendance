@@ -1,7 +1,6 @@
 package com.zoho.attendance.repository;
 
 
-import com.zoho.attendance.entity.AttendanceEntity;
 import com.zoho.attendance.entity.AttendanceHistoryEntity;
 import com.zoho.attendance.entity.AttendanceId;
 import org.springframework.data.domain.Page;

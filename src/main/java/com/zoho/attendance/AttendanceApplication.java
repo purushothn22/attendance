@@ -13,7 +13,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
 @SpringBootApplication
-@OpenAPIDefinition(info = @Info(title = "Attendance Tracking", version = "1.0", description = "Attendance Tracking", license = @License(name = "Apache 2.0", url = "http://www.apache.org/licenses/LICENSE-2.0.html"), contact = @Contact(name = "Purushoth", email = "purushoth@gmail.com", url = "https://nebulatech.com")))
+@OpenAPIDefinition(info = @Info(title = "Attendance Tracking", version = "1.0", description = "Attendance Tracking", license = @License(name = "Apache 2.0", url = "http://www.apache.org/licenses/LICENSE-2.0.html"), contact = @Contact(name = "Puvilink", email = "puvilink@gmail.com", url = "https://puvilink.com")))
 public class AttendanceApplication {
 
     public static void main(String[] args) {
