@@ -67,7 +67,7 @@ public class AttendanceController {
     @PostMapping(path = "/attendanceHistory")
     public Page<AttendanceHistoryEntity> getAttendanceHistory(@RequestParam(defaultValue = "0") int page,
                                                               @RequestParam(defaultValue = "10") int pageSize, @RequestBody AttendanceHistoryDTO request) {
-        Sort sort = Sort.by(Sort.Direction.DESC, "date");
+        Sort sort = Sort.by(Sort.Direction.ASC, "date");
         Pageable pageable = PageRequest.of(page, pageSize, sort);
         return attendanceservice.getAttendanceHistory(request, pageable);
     }

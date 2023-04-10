@@ -63,10 +63,9 @@ public class AttendanceService {
     }
 
     public Page<AttendanceHistoryEntity> getAttendanceHistory(AttendanceHistoryDTO request, Pageable pageable) {
-        return historyRepo.getAttendanceHistory(request.getDate()!=null && request.getDate().isBlank() ? null : request.getDate(),
-                request.getEmpId()!=null && request.getEmpId().isBlank() ? null : request.getEmpId(),
-                request.getMonth()!=null && request.getMonth().isBlank() ? null : request.getMonth(),
-                request.getYear()!=null && request.getYear().isBlank() ? null : request.getYear(),
+        return historyRepo.getAttendanceHistory(request.getEmpId()!=null && request.getEmpId().isBlank() ? null : request.getEmpId(),
+                request.getFromDate()!=null && request.getFromDate().isBlank() ? null : request.getFromDate(),
+                request.getToDate()!=null && request.getToDate().isBlank() ? null : request.getToDate(),
                 pageable);
     }
 
@@ -104,7 +103,7 @@ public class AttendanceService {
             int month = threeMonthsAgo.getMonthValue(); // March
             YearMonth yearMonth = YearMonth.of(year, month);
             int daysInMonth = yearMonth.lengthOfMonth();
-            int sundaysInMonth = 0;
+            /*int sundaysInMonth = 0;
             for (int i = 1; i <= daysInMonth; i++) {
                 LocalDate date = LocalDate.of(year, month, i);
                 DayOfWeek dayOfWeek = date.getDayOfWeek();
@@ -112,8 +111,8 @@ public class AttendanceService {
                     sundaysInMonth++;
                 }
             }
-            int daysInMonthExcludingSunday = daysInMonth - sundaysInMonth;
-            daysCountMap.put(yearMonth.toString(), daysInMonthExcludingSunday);
+            int daysInMonthExcludingSunday = daysInMonth - sundaysInMonth;*/
+            daysCountMap.put(yearMonth.toString(), daysInMonth);
             threeMonthsAgo = threeMonthsAgo.plus(1, ChronoUnit.MONTHS);
         }
         //List<String> daysList=attendanceRepository.getAllDays(request.getYear(),request.getMonth());

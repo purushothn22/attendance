@@ -11,7 +11,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class AttendanceHistoryDTO {
     private String empId;
-    private String date;
-    private String month;
-    private String year;
+    private String fromDate;
+    private String toDate;
 }

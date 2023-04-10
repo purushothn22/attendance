@@ -14,11 +14,11 @@ public interface AttendanceHistoryRepository extends JpaRepository<AttendanceHis
 
     public static final String  ATTENDANCE_HISTORY= "SELECT " +
             "emp_id,date,clock_date,status,checkin_time,checkout_time,checkin_location,checkout_location,latitude,longitude,checkin,out_latitude,out_longitude " +
-            "FROM attendance where (?1 is null or date(date)=?1) and (?2 is null or emp_id=?2) and (?3 is null or MONTH(date)=?3) and (?4 is null or year(date)=?4) and weekday(date)!=6";
+            "FROM attendance where (?1 is null or emp_id=?1) and (?2 is null or date(date)>=?2) and (?3 is null or date(date)<=?3)";
 
     public static final String  COUNT_ATTENDANCE_HISTORY= "SELECT " +
-            "count(*) FROM attendance where (?1 is null or date(date)=?1) and (?2 is null or emp_id=?2) and (?3 is null or MONTH(date)=?3) and (?4 is null or year(date)=?4) and weekday(date)!=6";
+            "count(*) FROM attendance where (?1 is null or emp_id=?1) and (?2 is null or date(date)>=?2) and (?3 is null or date(date)<=?3)";
 
     @Query(value=ATTENDANCE_HISTORY, countQuery = COUNT_ATTENDANCE_HISTORY,nativeQuery = true)
-    Page<AttendanceHistoryEntity> getAttendanceHistory(String reqDate, String empId, String month,String year, Pageable pageable);
+    Page<AttendanceHistoryEntity> getAttendanceHistory(String empId, String fromDate, String toDate, Pageable pageable);
 }	

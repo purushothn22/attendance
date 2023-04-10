@@ -41,7 +41,7 @@ public interface AttendanceRepository extends CrudRepository<AttendanceEntity, A
 
     public static final String ATTENDANCE_DET_FOR_EMPLOYEE= "SELECT " +
             "emp_id as \"empId\",concat(year(date),'-',LPAD(month(date),2,0),'-',LPAD(day(date),2,0)) as \"date\",status,checkin_time as \"checkinTime\",checkout_time as \"checkoutTime\",checkin_location as \"checkinLocation\",checkout_location as \"checkoutLocation\",latitude,longitude,checkin as \"logCount\" " +
-            "FROM attendance where emp_id=?1 and MONTH(date)=?2 and weekday(date)!=6 order by date";
+            "FROM attendance where emp_id=?1 and MONTH(date)=?2 order by date";
 
     public static final String GET_ALL_DAYS="" +
             "select a.Date " +
@@ -51,7 +51,7 @@ public interface AttendanceRepository extends CrudRepository<AttendanceEntity, A
             "    cross join (select 0 as a union all select 1 union all select 2 union all select 3 union all select 4 union all select 5 union all select 6 union all select 7 union all select 8 union all select 9) as b " +
             "    cross join (select 0 as a union all select 1 union all select 2 union all select 3 union all select 4 union all select 5 union all select 6 union all select 7 union all select 8 union all select 9) as c " +
             ") a " +
-            "where a.Date between  DATE_FORMAT(CONCAT(?1, '-', ?2, '-01'), '%Y-%m-%d')  and LAST_DAY(CONCAT(?1, '-', ?2, '-01')) and weekday(date)!=6 order by a.Date";
+            "where a.Date between  DATE_FORMAT(CONCAT(?1, '-', ?2, '-01'), '%Y-%m-%d')  and LAST_DAY(CONCAT(?1, '-', ?2, '-01')) order by a.Date";
 
     public static final String UPDATE_CLOCK_OUT="UPDATE attendance SET checkout_time=TIME(?1),checkout_location=?2,checkout_photo=?3,out_image_type=?4,out_latitude=?5,out_longitude=?6 where emp_id=?7 and date(date)=?8 and checkin=?9";
 
