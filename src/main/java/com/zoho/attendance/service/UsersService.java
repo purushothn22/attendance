@@ -50,12 +50,12 @@ public class UsersService {
             repository.save(newUser);
             if (user.getRole().equalsIgnoreCase("ADMIN")) {
                 AdminInfoEntity adminInfo = modelMapper.map(user, AdminInfoEntity.class);
-                java.sql.Date sqlDate = java.sql.Date.valueOf(user.getDob());
+                java.sql.Date sqlDate = java.sql.Date.valueOf(user.getDateOfBirth());
                 adminInfo.setDateOfBirth(sqlDate);
                 adminRepository.save(adminInfo);
             } else {
                 EmployeeInfoEntity employeeInfo = modelMapper.map(user, EmployeeInfoEntity.class);
-                java.sql.Date sqlDate = java.sql.Date.valueOf(user.getDob());
+                java.sql.Date sqlDate = java.sql.Date.valueOf(user.getDateOfBirth());
                 employeeInfo.setDateOfBirth(sqlDate);
                 employeeInfo.setMultiLocation(user.getMultiLocation());
                 empRepository.save(employeeInfo);
