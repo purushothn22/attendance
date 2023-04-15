@@ -22,7 +22,7 @@ import java.util.Map;
 public interface AttendanceRepository extends CrudRepository<AttendanceEntity, AttendanceId> {
 
     public static final String  ATTENDANCE_BY_DATE= "SELECT " +
-            "emp_id,date,clock_date,status,checkin_time,checkout_time,checkin_location,checkout_location,latitude,longitude,photo,image_Type,checkout_photo,out_image_type,checkin,out_latitude,out_longitude " +
+            "emp_id,date,clock_date,status,checkin_time,checkout_time,checkin_location,checkout_location,latitude,longitude,checkin,out_latitude,out_longitude " +
             "FROM attendance where date(date)=?1";
 
     public static final String CHECK_ATTENDANCE= "SELECT count(*) FROM attendance " +
@@ -30,6 +30,7 @@ public interface AttendanceRepository extends CrudRepository<AttendanceEntity, A
 
     public static final String CHECK_CLOCK_OUT= "Select count(*) from attendance " +
             "where emp_id=?1 and date(date)=?2 and checkout_time is null";
+
 
     public static final String ATTENDANCE_BY_MONTH= "SELECT " +
             "emp_id,date,clock_date,status,checkin_time,checkout_time,checkin_location,checkout_location,latitude,longitude,photo,image_Type,checkout_photo,out_image_type,checkin,out_latitude,out_longitude " +

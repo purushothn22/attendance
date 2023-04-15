@@ -72,6 +72,11 @@ public class AttendanceController {
         return attendanceservice.getAttendanceHistory(request, pageable);
     }
 
+    @PostMapping(path = "/getPhoto")
+    public Map<String, Object> getPhoto(@RequestBody PhotoDTO request) {
+        return attendanceservice.getPhoto(request);
+    }
+
     @PostMapping(path = "/checkClockOut")
     public Map<String, Object> checkClockOut(@RequestBody MonthlyAttendanceDTO request) {
         return attendanceservice.checkClockOut(request);

@@ -1,9 +1,6 @@
 package com.zoho.attendance.service;
 
-import com.zoho.attendance.dto.AttendanceDTO;
-import com.zoho.attendance.dto.AttendanceHistoryDTO;
-import com.zoho.attendance.dto.AttendanceReqDTO;
-import com.zoho.attendance.dto.MonthlyAttendanceDTO;
+import com.zoho.attendance.dto.*;
 import com.zoho.attendance.entity.AttendanceEntity;
 import com.zoho.attendance.entity.AttendanceHistoryEntity;
 import com.zoho.attendance.repository.AttendanceHistoryRepository;
@@ -63,10 +60,19 @@ public class AttendanceService {
     }
 
     public Page<AttendanceHistoryEntity> getAttendanceHistory(AttendanceHistoryDTO request, Pageable pageable) {
-        return historyRepo.getAttendanceHistory(request.getEmpId()!=null && request.getEmpId().isBlank() ? null : request.getEmpId(),
-                request.getFromDate()!=null && request.getFromDate().isBlank() ? null : request.getFromDate(),
-                request.getToDate()!=null && request.getToDate().isBlank() ? null : request.getToDate(),
+        return historyRepo.getAttendanceHistory(request.getEmpId() != null && request.getEmpId().isBlank() ? null : request.getEmpId(),
+                request.getFromDate() != null && request.getFromDate().isBlank() ? null : request.getFromDate(),
+                request.getToDate() != null && request.getToDate().isBlank() ? null : request.getToDate(),
                 pageable);
+    }
+
+    public Map<String, Object> getPhoto(PhotoDTO request) {
+        if (request.getFlag() != null && request.getFlag().equalsIgnoreCase("I"))
+            return historyRepo.getCheckinPhoto(request.getEmpId(), request.getDate(), request.getLogCount());
+        else if (request.getFlag() != null && request.getFlag().equalsIgnoreCase("O"))
+            return historyRepo.getCheckoutPhoto(request.getEmpId(), request.getDate(), request.getLogCount());
+        else
+            return Collections.emptyMap();
     }
 
     public Map<String, Object> checkClockOut(MonthlyAttendanceDTO request) {
