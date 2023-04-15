@@ -44,10 +44,10 @@ public class AttendanceService {
         List<AttendanceEntity> entityList = attendanceRepository.getAttendanceByDate(reqDate);
         for (AttendanceEntity entity : entityList) {
             AttendanceDTO attendance = modelMapper.map(entity, AttendanceDTO.class);
-            attendance.setInPhoto(decompress(entity.getPhoto()));
+/*            attendance.setInPhoto(decompress(entity.getPhoto()));
             attendance.setOutPhoto(decompress(entity.getCheckoutPhoto()));
             attendance.setInImageType(entity.getImageType());
-            attendance.setOutImageType(entity.getOutImageType());
+            attendance.setOutImageType(entity.getOutImageType());*/
             responseList.add(attendance);
         }
         return responseList;
@@ -90,10 +90,10 @@ public class AttendanceService {
         List<AttendanceEntity> entityList = attendanceRepository.getAttendanceByMonth(request.getEmpId(), request.getMonth(), request.getYear());
         for (AttendanceEntity entity : entityList) {
             AttendanceDTO attendance = modelMapper.map(entity, AttendanceDTO.class);
-            attendance.setInPhoto(decompress(entity.getPhoto()));
+/*            attendance.setInPhoto(decompress(entity.getPhoto()));
             attendance.setOutPhoto(decompress(entity.getCheckoutPhoto()));
             attendance.setInImageType(entity.getImageType());
-            attendance.setOutImageType(entity.getOutImageType());
+            attendance.setOutImageType(entity.getOutImageType());*/
             responseList.add(attendance);
         }
         return responseList;
