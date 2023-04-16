@@ -32,6 +32,8 @@ public class AttendanceService {
     private ModelMapper modelMapper;
     @Autowired
     private AttendanceHistoryRepository historyRepo;
+    @Autowired
+    private GeofenceService geofenceService;
 
 
     public List<AttendanceDTO> getAttendanceByDate(String reqDate) throws DataFormatException, IOException {
@@ -190,6 +192,10 @@ public class AttendanceService {
 
     public Map<String, Object> markAttendance1(AttendanceReqDTO request) throws IOException {
         Map<String, Object> responseMap = new HashMap<>();
+        Map<String, Object> geofenceMap = geofenceService.isInsideGeoFence(Double.parseDouble(request.getLatitude()), Double.parseDouble(request.getLongitude()), request.getGeoFenceId());
+        if ((int) geofenceMap.get("returnCode") != 0) {
+            return geofenceMap;
+        }
         String ret = null;
         int logCount = 1;
         AttendanceEntity attendance = modelMapper.map(request, AttendanceEntity.class);
@@ -208,18 +214,18 @@ public class AttendanceService {
                 attendance.setPhoto(compress(request.getBase64Image()));
                 if (attendanceRepository.save(attendance) != null) {
                     responseMap.put("returnCode", 0);
-                    responseMap.put("returnMsg", "Insert Success");
+                    responseMap.put("returnMsg", "Attendance marked Successfully");
                 } else {
                     responseMap.put("returnCode", 1);
-                    responseMap.put("returnMsg", "Insert Failure");
+                    responseMap.put("returnMsg", "CheckIn Failure");
                 }
             } else {
                 if (attendanceRepository.updateClockOutTime(request.getCheckoutTime(), request.getLocation(), compress(request.getBase64Image()), request.getImageType(), request.getLatitude(), request.getLongitude(), request.getEmpId(), clockDate, request.getLogCount()) > 0) {
                     responseMap.put("returnCode", 0);
-                    responseMap.put("returnMsg", "Update Success");
+                    responseMap.put("returnMsg", "Checkout Success");
                 } else {
                     responseMap.put("returnCode", 1);
-                    responseMap.put("returnMsg", "update Failure");
+                    responseMap.put("returnMsg", "Checkout Failure");
                 }
             }
             return responseMap;

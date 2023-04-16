@@ -24,4 +24,5 @@ public class AttendanceReqDTO {
     private String imageType;
     private String checkinFlag;
     private int logCount;
+    private Long geoFenceId;
 }

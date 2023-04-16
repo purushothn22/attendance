@@ -97,6 +97,25 @@
             <artifactId>modelmapper</artifactId>
             <version>3.0.0</version>
         </dependency>
+        <dependency>
+            <groupId>org.json</groupId>
+            <artifactId>json</artifactId>
+            <version>20210307</version>
+        </dependency>
+<!--        <dependency>
+            <groupId>org.locationtech.jts</groupId>
+            <artifactId>jts-core</artifactId>
+            <version>1.17.0</version>
+        </dependency>
+        <dependency>
+            <groupId>io.oss84.geotools</groupId>
+            <artifactId>gt-main</artifactId>
+            <version>24.2</version>
+        </dependency>
+        &lt;!&ndash; Thanks for using https://jar-download.com &ndash;&gt;-->
+
+
+
     </dependencies>
 
 
