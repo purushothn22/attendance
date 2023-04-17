@@ -21,6 +21,8 @@ public class GeoFence {
     private double radius;
     private String name;
     private String address;
+    private double latitude;
+    private double longitude;
 
     @OneToMany(cascade = CascadeType.ALL)
     private List<GeoPoint> vertices;

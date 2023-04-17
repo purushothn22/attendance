@@ -25,6 +25,8 @@ public class GeofenceService {
         GeoFence geoFence = new GeoFence();
         geoFence.setName(request.getName());
         geoFence.setAddress(request.getAddress());
+        geoFence.setLatitude(request.getLatitude());
+        geoFence.setLongitude(request.getLongitude());
         geoFence.setRadius(request.getRadius()); // Update to use meters
 
         // Generate vertices for the polygon based on center point and radius
